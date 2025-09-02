@@ -1,4 +1,4 @@
-const url = 'https://gai93003-chat-application.hosting.codeyourfuture.io';
+const url = 'https://gai3003-chat-application-server-backend.hosting.codeyourfuture.io';
 const messageContainer = document.getElementById('chat-body');
 const inputEl = document.getElementById('input-el');
 const submitBtn = document.getElementById('send-btn');
@@ -31,6 +31,7 @@ const storeMessages = async (event) => {
   event.preventDefault();
 
   const newMessage = inputEl.value.trim();
+    inputEl.value = '';
 
   if (!newMessage) {
     alert("Please type a message");
@@ -38,6 +39,7 @@ const storeMessages = async (event) => {
   }
 
   try {
+    // inputEl.value = '';
     const response = await fetch(url, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
