@@ -2,46 +2,48 @@ import express from "express";
 import cors from "cors";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
+app.use(express.json());
 
 const messages = [
   {
-    message: "Hello buddy, how did your day go?"
+    message: "Hello buddy, how did your day go?",
+    timestamp: Date.now()
   },
   {
-    message: "Hey man, my day went well thanks and yours?"
+    message: "Hey man, my day went well thanks and yours?",
+    timestamp: Date.now()
   }
 ];
 
-// Use express.json() middleware to parse JSON bodies
-
-app.use(express.json());
-
-app.get("/", (req, res) => {
-  console.log("Received a request for a quote");
-
-  if (messages.length === 0) {
-    return res.status(404).json({ error: "No messages available." });
+// Get all messages or only messages after a certain timestamp
+app.get("/messages", (req, res) => {
+  const since = Number(req.query.since);
+  if (since) {
+    const filtered = messages.filter(msg => msg.timestamp > since);
+    return res.json(filtered);
   }
-
   res.json(messages);
 });
 
-app.post('/', (req, res) => {
+// Add a new message with a timestamp
+app.post('/messages', (req, res) => {
   const { message } = req.body;
-
-  if(!message) {
+  if (!message) {
     return res.status(400).send("Message is required.");
   }
-
-  messages.push({ message });
-  res.send("ok");
+  const newMsg = { message, timestamp: Date.now() };
+  messages.push(newMsg);
+  res.status(201).json(newMsg);
 });
 
+// Optionally, keep the old root GET for compatibility
+app.get("/", (req, res) => {
+  res.json(messages);
+});
 
 app.listen(port, () => {
   console.log(`Chat application server listening on port ${port}`);
 });
-

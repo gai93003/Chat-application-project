@@ -39,7 +39,6 @@ const storeMessages = async (event) => {
   }
 
   try {
-    // inputEl.value = '';
     const response = await fetch(url, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
@@ -60,17 +59,6 @@ const storeMessages = async (event) => {
 };
 
 submitBtn.addEventListener('click', storeMessages);
-
-const keepFetchingMessages = async () => {
-    const lastMessageTime = state.messages.length > 0 ? state.messages[state.messages.length - 1].timestamp : null;
-    const queryString = lastMessageTime ? `?since=${lastMessageTime}` : "";
-    const url = `${server}/messages${queryString}`;
-    const rawResponse = await fetch(url);
-    const response = await rawResponse.json();
-    state.messages.push(...response);
-    displayMessages(state.messages);
-    setTimeout(keepFetchingMessages, 100);
-}
 
 
 window.onload = getMessages;
