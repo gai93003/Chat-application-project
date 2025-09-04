@@ -2,12 +2,13 @@ const url = 'https://gai3003-chat-application-server-backend.hosting.codeyourfut
 const messageContainer = document.getElementById('chat-body');
 const inputEl = document.getElementById('input-el');
 const submitBtn = document.getElementById('send-btn');
+let messagesState = []; // Store all messages locally
 
 const getMessages = async () => {
   try {
-    const response = await fetch(url);
+    const response = await fetch(`${url}/messages`);
     const messages = await response.json();
-
+    messagesState = messages; // Store messages for polling
     displayMessages(messages)
   }
   catch (error) {
@@ -27,11 +28,42 @@ const displayMessages = (messages) => {
   }
 }
 
+// const storeMessages = async (event) => {
+//   event.preventDefault();
+
+//   const newMessage = inputEl.value.trim();
+//     inputEl.value = '';
+
+//   if (!newMessage) {
+//     alert("Please type a message");
+//     return;
+//   }
+
+//   try {
+//     const response = await fetch(url, {
+//       method: "POST",
+//       headers: {"Content-Type": "application/json"},
+//       body: JSON.stringify({ message: newMessage }), 
+//     });
+
+//     if (response.ok) {
+//       // alert("Message successfully sent, Yahhh!");
+//       getMessages();
+//     }
+//     else {
+//       alert("Failed to send the message");
+//     }
+//   }
+//   catch (error) {
+//     console.log("Error sending message:", error);
+//   }
+// };
+
 const storeMessages = async (event) => {
   event.preventDefault();
 
   const newMessage = inputEl.value.trim();
-    inputEl.value = '';
+  inputEl.value = '';
 
   if (!newMessage) {
     alert("Please type a message");
@@ -39,14 +71,14 @@ const storeMessages = async (event) => {
   }
 
   try {
-    const response = await fetch(url, {
+    // FIX: Correct POST URL
+    const response = await fetch(`${url}/messages`, {
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify({ message: newMessage }), 
     });
 
     if (response.ok) {
-      // alert("Message successfully sent, Yahhh!");
       getMessages();
     }
     else {
@@ -60,5 +92,28 @@ const storeMessages = async (event) => {
 
 submitBtn.addEventListener('click', storeMessages);
 
+const keepFetchingMessages = async () => {
+  try {
+    const lastMessageTime = messagesState.length > 0 ? messagesState[messagesState.length - 1].timestamp : null;
+    let fetchUrl = `${url}/messages`;
+    if (lastMessageTime) {
+      fetchUrl += `?since=${lastMessageTime}`;
+    }
+    const response = await fetch(fetchUrl);
+    const newMessages = await response.json();
 
-window.onload = getMessages;
+    if (newMessages.length > 0) {
+      messagesState.push(...newMessages);
+      displayMessages(messagesState);
+    }
+  } catch (error) {
+    console.error("Polling error:", error);
+  }
+  setTimeout(keepFetchingMessages, 1000); // Poll every second
+};
+
+
+window.onload = async () => {
+  await getMessages();
+  keepFetchingMessages()
+}
