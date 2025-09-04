@@ -28,37 +28,6 @@ const displayMessages = (messages) => {
   }
 }
 
-// const storeMessages = async (event) => {
-//   event.preventDefault();
-
-//   const newMessage = inputEl.value.trim();
-//     inputEl.value = '';
-
-//   if (!newMessage) {
-//     alert("Please type a message");
-//     return;
-//   }
-
-//   try {
-//     const response = await fetch(url, {
-//       method: "POST",
-//       headers: {"Content-Type": "application/json"},
-//       body: JSON.stringify({ message: newMessage }), 
-//     });
-
-//     if (response.ok) {
-//       // alert("Message successfully sent, Yahhh!");
-//       getMessages();
-//     }
-//     else {
-//       alert("Failed to send the message");
-//     }
-//   }
-//   catch (error) {
-//     console.log("Error sending message:", error);
-//   }
-// };
-
 const storeMessages = async (event) => {
   event.preventDefault();
 
