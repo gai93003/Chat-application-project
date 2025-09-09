@@ -18,15 +18,27 @@ const messages = [
   }
 ];
 
-// Get all messages or only messages after a certain timestamp
+const callbacksForNewMessages = [];
+
 app.get("/messages", (req, res) => {
-  const since = Number(req.query.since);
-  if (since) {
-    const filtered = messages.filter(msg => msg.timestamp > since);
-    return res.json(filtered);
+  const since = req.query.since ? Number(req.query.since) : null;
+
+  if (since === null) {
+    // No since param → send the full history
+    return res.json(messages);
   }
-  res.json(messages);
+
+  const messagesToSend = messages.filter(msg => msg.timestamp > since);
+
+  if (messagesToSend.length === 0) {
+    // No new messages yet → long-poll
+    callbacksForNewMessages.push((newMsgs) => res.json(newMsgs));
+  } else {
+    // Send only new messages
+    res.json(messagesToSend);
+  }
 });
+
 
 // Add a new message with a timestamp
 app.post('/messages', (req, res) => {
@@ -36,6 +48,13 @@ app.post('/messages', (req, res) => {
   }
   const newMsg = { message, timestamp: Date.now() };
   messages.push(newMsg);
+
+  // Wake up any waiting GET requests
+  while (callbacksForNewMessages.length > 0) {
+    const callback = callbacksForNewMessages.pop();
+    callback([newMsg]); // always send an array
+  }
+
   res.status(201).json(newMsg);
 });
 

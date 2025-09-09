@@ -1,4 +1,4 @@
-const url = 'https://gai93003-chat-application-server-backend.hosting.codeyourfuture.io'
+const url = 'http://localhost:3000'
 const messageContainer = document.getElementById('chat-body');
 const inputEl = document.getElementById('input-el');
 const submitBtn = document.getElementById('send-btn');
