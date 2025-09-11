@@ -4,7 +4,7 @@ import http from "http";
 import { server as WebSocketServer } from "websocket";
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 300;
 
 app.use(cors());
 app.use(express.json());
@@ -37,9 +37,15 @@ app.post("/messages", (req, res) => {
 
 // ----- SERVER & WEBSOCKET ----- //
 
-const server = http.createServer(app); // HTTP server
-server.listen(port, () => {
-  console.log(`Chat app running on http://localhost:${port}`);
+// const server = http.createServer(app); // HTTP server
+// server.listen(port, () => {
+//   console.log(`Chat app running on http://localhost:${port}`);
+// });
+
+// Make sure server listens on all interfaces, not just localhost
+const server = http.createServer(app);
+  server.listen(port, "0.0.0.0", () => {
+  console.log(`Chat app running at http://0.0.0.0:${port}`);
 });
 
 const messages = [
