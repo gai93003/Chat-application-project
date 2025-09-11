@@ -1,0 +1,13 @@
+{
+  "name": "chat-application-project",
+  "version": "1.0.0",
+  "main": "script.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node script.mjs"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}
