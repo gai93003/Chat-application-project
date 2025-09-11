@@ -9,6 +9,34 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// ----- HTTP ROUTES ----- //
+
+// Health check route
+app.get("/", (req, res) => {
+  res.json({ status: "ok", message: "✅ Chat backend is running" });
+});
+
+// Get all messages
+app.get("/messages", (req, res) => {
+  res.json(messages);
+});
+
+// Add a new message via HTTP
+app.post("/messages", (req, res) => {
+  const { message } = req.body;
+  if (!message) return res.status(400).json({ error: "Message is required" });
+
+  const newMsg = { message, timestamp: Date.now() };
+  messages.push(newMsg);
+
+  // Broadcast to all WebSocket clients
+  broadcast(JSON.stringify(newMsg));
+
+  res.status(201).json(newMsg);
+});
+
+// ----- SERVER & WEBSOCKET ----- //
+
 const server = http.createServer(app); // HTTP server
 server.listen(port, () => {
   console.log(`Chat app running on http://localhost:${port}`);
@@ -27,7 +55,7 @@ const webSocketServer = new WebSocketServer({
 });
 
 function originIsAllowed(origin) {
-  return true; // you can add restrictions here later
+  return true; // Add restrictions later if needed
 }
 
 webSocketServer.on("request", (request) => {
@@ -41,7 +69,7 @@ webSocketServer.on("request", (request) => {
   clients.add(connection);
   console.log("✅ New WebSocket connection");
 
-  // Send chat history
+  // Send chat history to the new client
   connection.sendUTF(JSON.stringify(messages));
 
   // Listen for new messages
