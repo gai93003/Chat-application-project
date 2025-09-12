@@ -2,50 +2,70 @@ const url = 'https://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io';
 const messageContainer = document.getElementById('chat-body');
 const inputEl = document.getElementById('input-el');
 const submitBtn = document.getElementById('send-btn');
-let messagesState = []; // Store all messages locally
 
-// Fetch old messages once (history)
+let messagesState = []; // Store all messages locally
+let ws;
+
+// ------------------ FETCH HISTORY ------------------ //
 const getMessages = async () => {
   try {
     const response = await fetch(`${url}/messages`);
     const messages = await response.json();
     messagesState = messages;
-    displayMessages(messages);
-  }
-  catch (error) {
-    console.error("Error", error);
-    return [];
+    displayMessages(messagesState);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
   }
 };
 
-// ✅ CHANGED: now render like/dislike buttons with counts
+// ------------------ DISPLAY MESSAGES ------------------ //
 const displayMessages = (messages) => {
   messageContainer.innerHTML = '';
-  for (let message of messages) {
+
+  messages.forEach((message) => {
     const wrapper = document.createElement('div');
-    wrapper.className = "message"; // optional for styling
-    wrapper.textContent = message.message;
+    wrapper.className = "message";
+
+    const para = document.createElement('p');
+    para.textContent = message.message;
 
     // Like button
     const likeBtn = document.createElement('button');
     likeBtn.textContent = `👍 ${message.likes ?? 0}`;
     likeBtn.onclick = async () => {
-      await fetch(`${url}/messages/${message.id}/like`, { method: "POST" });
+      // Optimistic UI
+      message.likes = (message.likes ?? 0) + 1;
+      displayMessages(messagesState);
+
+      await fetch(`${url}/messages/${message.id}/reaction`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "like" })
+      });
     };
 
     // Dislike button
     const dislikeBtn = document.createElement('button');
     dislikeBtn.textContent = `👎 ${message.dislikes ?? 0}`;
     dislikeBtn.onclick = async () => {
-      await fetch(`${url}/messages/${message.id}/dislike`, { method: "POST" });
+      message.dislikes = (message.dislikes ?? 0) + 1;
+      displayMessages(messagesState);
+
+      await fetch(`${url}/messages/${message.id}/reaction`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "dislike" })
+      });
     };
 
+    wrapper.appendChild(para);
     wrapper.appendChild(likeBtn);
     wrapper.appendChild(dislikeBtn);
     messageContainer.appendChild(wrapper);
-  }
+  });
 };
 
+// ------------------ SEND NEW MESSAGE ------------------ //
 const storeMessages = async (event) => {
   event.preventDefault();
 
@@ -57,48 +77,54 @@ const storeMessages = async (event) => {
     return;
   }
 
+  // Optimistic UI: show message immediately
+  const tempMsg = {
+    id: Date.now(),
+    message: newMessage,
+    likes: 0,
+    dislikes: 0,
+    timestamp: Date.now()
+  };
+  messagesState.push(tempMsg);
+  displayMessages(messagesState);
+
   try {
     const response = await fetch(`${url}/messages`, {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ message: newMessage }), 
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: newMessage })
     });
 
     if (!response.ok) {
       alert("Failed to send the message");
     }
-    // ❌ REMOVED: no need to call getMessages()
-    // WebSocket will update everyone automatically
-  }
-  catch (error) {
-    console.log("Error sending message:", error);
+  } catch (error) {
+    console.error("Error sending message:", error);
   }
 };
 
 submitBtn.addEventListener('click', storeMessages);
 
-// WebSocket setup
-let ws;
-
+// ------------------ WEBSOCKET SETUP ------------------ //
 const setupWebSocket = () => {
-  ws = new WebSocket("wss://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io");
+  ws = new WebSocket(`wss://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io`);
 
   ws.onopen = () => {
     console.log("WebSocket connected");
   };
 
-  // ✅ CHANGED: update message by id instead of always pushing
   ws.onmessage = (event) => {
-    const updatedMessage = JSON.parse(event.data);
+    const payload = JSON.parse(event.data);
 
-    // Find message in state
-    const index = messagesState.findIndex(m => m.id === updatedMessage.id);
-    if (index !== -1) {
-      // Replace with updated version
-      messagesState[index] = updatedMessage;
-    } else {
-      // New message (first time it appears)
-      messagesState.push(updatedMessage);
+    if (payload.type === "history") {
+      messagesState = payload.data;
+    } else if (payload.type === "message" || payload.type === "reaction") {
+      const index = messagesState.findIndex(m => m.id === payload.data.id);
+      if (index !== -1) {
+        messagesState[index] = payload.data;
+      } else {
+        messagesState.push(payload.data);
+      }
     }
 
     displayMessages(messagesState);
@@ -110,11 +136,12 @@ const setupWebSocket = () => {
 
   ws.onclose = () => {
     console.log("WebSocket closed. Reconnecting in 2s...");
-    setTimeout(setupWebSocket, 2000); // auto-reconnect
+    setTimeout(setupWebSocket, 2000);
   };
 };
 
+// ------------------ INIT ------------------ //
 window.onload = async () => {
-  await getMessages();   // Load old messages first
-  setupWebSocket();      // Then connect WebSocket
+  await getMessages(); // load old messages first
+  setupWebSocket();    // then connect WebSocket
 };
