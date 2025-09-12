@@ -1,4 +1,4 @@
-const url = 'https://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io;
+const url = 'https://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io';
 const messageContainer = document.getElementById('chat-body');
 const inputEl = document.getElementById('input-el');
 const submitBtn = document.getElementById('send-btn');
