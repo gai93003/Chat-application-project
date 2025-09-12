@@ -42,16 +42,16 @@ app.post("/messages", (req, res) => {
 
 // ----- SERVER & WEBSOCKET ----- //
 
-const server = http.createServer(app); // HTTP server
-server.listen(port, () => {
-  console.log(`Chat app running on http://localhost:${port}`);
-});
-
-// Make sure server listens on all interfaces, not just localhost
-// const server = http.createServer(app);
-//   server.listen(port, "0.0.0.0", () => {
-//   console.log(`Chat app running at http://0.0.0.0:${port}`);
+// const server = http.createServer(app); // HTTP server
+// server.listen(port, () => {
+//   console.log(`Chat app running on http://localhost:${port}`);
 // });
+
+//Make sure server listens on all interfaces, not just localhost
+const server = http.createServer(app);
+  server.listen(port, "0.0.0.0", () => {
+  console.log(`Chat app running at http://0.0.0.0:${port}`);
+});
 
 const clients = new Set();
 
