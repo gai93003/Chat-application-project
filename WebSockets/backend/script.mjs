@@ -4,10 +4,15 @@ import http from "http";
 import { server as WebSocketServer } from "websocket";
 
 const app = express();
-const port = process.env.PORT || 300;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+const messages = [
+  { message: "Hello buddy, how did your day go?", timestamp: Date.now() },
+  { message: "Hey man, my day went well thanks and yours?", timestamp: Date.now() }
+];
 
 // ----- HTTP ROUTES ----- //
 
@@ -37,21 +42,16 @@ app.post("/messages", (req, res) => {
 
 // ----- SERVER & WEBSOCKET ----- //
 
-// const server = http.createServer(app); // HTTP server
-// server.listen(port, () => {
-//   console.log(`Chat app running on http://localhost:${port}`);
-// });
-
-// Make sure server listens on all interfaces, not just localhost
-const server = http.createServer(app);
-  server.listen(port, "0.0.0.0", () => {
-  console.log(`Chat app running at http://0.0.0.0:${port}`);
+const server = http.createServer(app); // HTTP server
+server.listen(port, () => {
+  console.log(`Chat app running on http://localhost:${port}`);
 });
 
-const messages = [
-  { message: "Hello buddy, how did your day go?", timestamp: Date.now() },
-  { message: "Hey man, my day went well thanks and yours?", timestamp: Date.now() }
-];
+// Make sure server listens on all interfaces, not just localhost
+// const server = http.createServer(app);
+//   server.listen(port, "0.0.0.0", () => {
+//   console.log(`Chat app running at http://0.0.0.0:${port}`);
+// });
 
 const clients = new Set();
 
