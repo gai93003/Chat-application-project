@@ -1,4 +1,4 @@
-const url = 'https://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io';
+const url = 'http://0.0.0.0:3000';
 const messageContainer = document.getElementById('chat-body');
 const inputEl = document.getElementById('input-el');
 const submitBtn = document.getElementById('send-btn');
@@ -18,12 +18,31 @@ const getMessages = async () => {
   }
 };
 
+// ✅ CHANGED: now render like/dislike buttons with counts
 const displayMessages = (messages) => {
   messageContainer.innerHTML = '';
   for (let message of messages) {
-    const para = document.createElement('p');
-    para.textContent = message.message;
-    messageContainer.appendChild(para);
+    const wrapper = document.createElement('div');
+    wrapper.className = "message"; // optional for styling
+    wrapper.textContent = message.message;
+
+    // Like button
+    const likeBtn = document.createElement('button');
+    likeBtn.textContent = `👍 ${message.likes ?? 0}`;
+    likeBtn.onclick = async () => {
+      await fetch(`${url}/messages/${message.id}/like`, { method: "POST" });
+    };
+
+    // Dislike button
+    const dislikeBtn = document.createElement('button');
+    dislikeBtn.textContent = `👎 ${message.dislikes ?? 0}`;
+    dislikeBtn.onclick = async () => {
+      await fetch(`${url}/messages/${message.id}/dislike`, { method: "POST" });
+    };
+
+    wrapper.appendChild(likeBtn);
+    wrapper.appendChild(dislikeBtn);
+    messageContainer.appendChild(wrapper);
   }
 };
 
@@ -48,6 +67,8 @@ const storeMessages = async (event) => {
     if (!response.ok) {
       alert("Failed to send the message");
     }
+    // ❌ REMOVED: no need to call getMessages()
+    // WebSocket will update everyone automatically
   }
   catch (error) {
     console.log("Error sending message:", error);
@@ -60,16 +81,26 @@ submitBtn.addEventListener('click', storeMessages);
 let ws;
 
 const setupWebSocket = () => {
-  // Use wss:// instead of http(s)://
   ws = new WebSocket("wss://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io");
 
   ws.onopen = () => {
     console.log("WebSocket connected");
   };
 
+  // ✅ CHANGED: update message by id instead of always pushing
   ws.onmessage = (event) => {
-    const newMessage = JSON.parse(event.data);
-    messagesState.push(newMessage);
+    const updatedMessage = JSON.parse(event.data);
+
+    // Find message in state
+    const index = messagesState.findIndex(m => m.id === updatedMessage.id);
+    if (index !== -1) {
+      // Replace with updated version
+      messagesState[index] = updatedMessage;
+    } else {
+      // New message (first time it appears)
+      messagesState.push(updatedMessage);
+    }
+
     displayMessages(messagesState);
   };
 
