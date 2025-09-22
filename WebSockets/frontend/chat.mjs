@@ -1,4 +1,4 @@
-const url = 'http://0.0.0.0:3000';
+const url = 'https://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io';
 const messageContainer = document.getElementById('chat-body');
 const inputEl = document.getElementById('input-el');
 const submitBtn = document.getElementById('send-btn');
@@ -91,7 +91,7 @@ const storeMessages = async (event) => {
   displayMessages(messagesState);
 
 
-  
+
 
   try {
     const response = await fetch(`${url}/messages`, {
