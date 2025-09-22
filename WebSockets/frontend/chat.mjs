@@ -1,7 +1,8 @@
-const url = 'https://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io';
+const url = 'http://0.0.0.0:3000';
 const messageContainer = document.getElementById('chat-body');
 const inputEl = document.getElementById('input-el');
 const submitBtn = document.getElementById('send-btn');
+import { currentUser } from "./authentication.mjs";
 
 let messagesState = []; // Store all messages locally
 let ws;
@@ -27,7 +28,7 @@ const displayMessages = (messages) => {
     wrapper.className = "message";
 
     const para = document.createElement('p');
-    para.textContent = message.message;
+    para.innerHTML = `<strong>${message.username ?? 'Anonymous'}:</strong> ${message.message}`;
 
     // Like button
     const likeBtn = document.createElement('button');
@@ -81,6 +82,7 @@ const storeMessages = async (event) => {
   const tempMsg = {
     id: Date.now(),
     message: newMessage,
+    username: window.currentUser ?? "anonymous",
     likes: 0,
     dislikes: 0,
     timestamp: Date.now()
@@ -88,11 +90,17 @@ const storeMessages = async (event) => {
   messagesState.push(tempMsg);
   displayMessages(messagesState);
 
+
+  
+
   try {
     const response = await fetch(`${url}/messages`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: newMessage })
+      body: JSON.stringify({ 
+        message: newMessage,
+        username: window.currentUser // sends the logged-in username
+      })
     });
 
     if (!response.ok) {
@@ -145,3 +153,6 @@ window.onload = async () => {
   await getMessages(); // load old messages first
   setupWebSocket();    // then connect WebSocket
 };
+
+
+export { getMessages, setupWebSocket };

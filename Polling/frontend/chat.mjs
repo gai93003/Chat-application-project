@@ -39,6 +39,22 @@ const storeMessages = async (event) => {
     return;
   }
 
+  if (!window.currentUser) {
+    alert("You must be logged in to send messages");
+    return;
+  }
+
+  const tempMsg = {
+    id: Date.now(),
+    message: newMessage,
+    username: window.currentUser, // attach username
+    likes: 0,
+    dislikes: 0,
+    timestamp: Date.now()
+  };
+  messagesState.push(tempMsg);
+  displayMessages(messagesState);
+
   try {
     // FIX: Correct POST URL
     const response = await fetch(`${url}/messages`, {

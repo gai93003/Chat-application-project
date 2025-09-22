@@ -3,24 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat application</title>
+  <title>Chat Application</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main id="">
-    <header>Our Chat Hub</header>
-    <section id="chat-body">
-      <article id="messages">
-      </article>
-    </section>
-    <section id="input-container">
-      <label for="input-el">Chat:
-        <input type="text" placeholder="message" id="input-el" required>
-      </label>
-      <button id="send-btn">Send</button>
-    </section>
-  </main>
-    
-  <script type="module" src="chat.mjs"></script>
+  <header>Our Chat Hub</header>
+
+<section id="auth-section">
+  <h2>Login / Register</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button id="register-btn">Register</button>
+  <button id="login-btn">Login</button>
+  <p id="status"></p>
+</section>
+
+<main id="chat-section" style="display:none;">
+  <section id="chat-body">
+    <article id="messages"></article>
+  </section>
+  <section id="input-container">
+    <label for="input-el">Chat:
+      <input type="text" placeholder="message" id="input-el" required>
+    </label>
+    <button id="send-btn">Send</button>
+  </section>
+</main>
+
+<script type="module" src="authentication.mjs"></script>
+<script type="module" src="chat.mjs"></script>
 </body>
 </html>
