@@ -2,8 +2,6 @@ const url = 'https://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io';
 const messageContainer = document.getElementById('chat-body');
 const inputEl = document.getElementById('input-el');
 const submitBtn = document.getElementById('send-btn');
-import { currentUser } from "./authentication.mjs";
-
 let messagesState = []; // Store all messages locally
 let ws;
 
@@ -77,21 +75,6 @@ const storeMessages = async (event) => {
     alert("Please type a message");
     return;
   }
-
-  // Optimistic UI: show message immediately
-  const tempMsg = {
-    id: Date.now(),
-    message: newMessage,
-    username: window.currentUser ?? "anonymous",
-    likes: 0,
-    dislikes: 0,
-    timestamp: Date.now()
-  };
-  messagesState.push(tempMsg);
-  displayMessages(messagesState);
-
-
-
 
   try {
     const response = await fetch(`${url}/messages`, {

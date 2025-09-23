@@ -76,16 +76,6 @@ const messages = [
 app.get("/", (req, res) => res.json({ status: "ok", message: "✅ Chat backend is running" }));
 app.get("/messages", (req, res) => res.json(messages));
 
-// app.post("/messages", (req, res) => {
-//   const { message } = req.body;
-//   if (!message) return res.status(400).json({ error: "Message is required" });
-
-//   const newMsg = { id: Date.now(), message, username, timestamp: Date.now(), likes: 0, dislikes: 0 };
-//   messages.push(newMsg);
-
-//   broadcast(JSON.stringify({ type: "message", data: newMsg }));
-//   res.status(201).json(newMsg);
-// });
 
 app.post("/messages", (req, res) => {
   const { message, username } = req.body; // ✅ extract username

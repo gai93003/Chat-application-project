@@ -1,6 +1,7 @@
 import { getMessages, setupWebSocket } from "./chat.mjs"; // if exported
 
-const url = "http://0.0.0.0:3000";
+const url = 'https://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io';
+
 const statusEl = document.getElementById("status");
 
 function showChat() {
@@ -39,13 +40,6 @@ async function login() {
     });
     const data = await res.json();
     statusEl.textContent = data.message;
-
-    // if (res.ok) {
-    //   window.currentUser = username; // Store globally
-    //   showChat();
-    //   await getMessages();
-    //   setupWebSocket();
-    // }
 
   if (res.ok) {
   window.currentUser = username; // ✅ store username globally
