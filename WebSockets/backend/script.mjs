@@ -5,9 +5,11 @@ import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
 import { server as WebSocketServer } from "websocket";
+import jwt from "jsonwebtoken";
 
 const app = express();
 const port = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
 
 app.use(cors());
 app.use(express.json());
@@ -41,6 +43,21 @@ function addUser(username, passwordHash) {
   saveUsers(users);
 }
 
+// This func to basically here to act as a middleware and verify tokens.
+
+function authentication(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user; // this is the format { username: "...." }
+    next();
+  });
+}
+
 // ------------------ AUTH ROUTES ------------------ //
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
@@ -63,6 +80,8 @@ app.post("/login", async (req, res) => {
   const match = await bcrypt.compare(password, user.passwordHash);
   if (!match) return res.status(400).json({ message: "Invalid credentials" });
 
+  // res.json({ message: "✅ Login successful" });
+  const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "1hr"});
   res.json({ message: "✅ Login successful" });
 });
 
@@ -74,20 +93,20 @@ const messages = [
 
 // ------------------ CHAT ROUTES ------------------ //
 app.get("/", (req, res) => res.json({ status: "ok", message: "✅ Chat backend is running" }));
-app.get("/messages", (req, res) => res.json(messages));
+app.get("/messages", authentication, (req, res) => res.json(messages));
 
 
-app.post("/messages", (req, res) => {
+app.post("/messages", authentication, (req, res) => {
   const { message, username } = req.body; // ✅ extract username
 
-  if (!message || !username) {
-    return res.status(400).json({ error: "Message and username required" });
+  if (!message) {
+    return res.status(400).json({ error: "Message required" });
   }
 
   const newMsg = { 
     id: Date.now(), 
     message, 
-    username,       // ✅ now this exists
+    username: req.user.username,       // ✅ now this exists
     timestamp: Date.now(), 
     likes: 0, 
     dislikes: 0 
@@ -99,7 +118,7 @@ app.post("/messages", (req, res) => {
 });
 
 
-app.post("/messages/:id/reaction", (req, res) => {
+app.post("/messages/:id/reaction", authentication, (req, res) => {
   const { id } = req.params;
   const { type } = req.body;
   const message = messages.find(m => m.id == id);

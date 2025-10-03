@@ -4,6 +4,7 @@ const inputEl = document.getElementById('input-el');
 const submitBtn = document.getElementById('send-btn');
 let messagesState = []; // Store all messages locally
 let ws;
+inputEl.value = '';
 
 // ------------------ FETCH HISTORY ------------------ //
 const getMessages = async () => {
@@ -24,6 +25,15 @@ const displayMessages = (messages) => {
   messages.forEach((message) => {
     const wrapper = document.createElement('div');
     wrapper.className = "message";
+
+    // Add different class name depending on sender
+
+    if ( message.username === window.currentUser ) {
+      wrapper.classList.add("my-message");
+    }
+    else {
+      wrapper.classList.add("other-message");
+    }
 
     const para = document.createElement('p');
     para.innerHTML = `<strong>${message.username ?? 'Anonymous'}:</strong> ${message.message}`;

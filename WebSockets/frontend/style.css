@@ -17,3 +17,35 @@ main#chat-app {
   background-color: #00212b;
   color: #c0cad7;
 }
+
+/* Common message style */
+.message {
+  max-width: 60%;
+  padding: 10px;
+  margin: 8px;
+  border-radius: 12px;
+  display: inline-block;
+  clear: both;
+}
+
+/* My messages (right side, green) */
+.my-message {
+  background-color: #c2f9bb;
+  margin-left: auto;       /* Push to right */
+  text-align: right;
+  border-top-right-radius: 0;
+}
+
+/* Others' messages (left side, gray) */
+.other-message {
+  background-color: #e0e0e0;
+  margin-right: auto;      /* Push to left */
+  text-align: left;
+  border-top-left-radius: 0;
+}
+
+/* Optional: align reactions under text */
+.message button {
+  margin: 2px;
+  font-size: 0.8rem;
+}
