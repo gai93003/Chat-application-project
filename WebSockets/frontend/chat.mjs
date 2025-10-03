@@ -1,3 +1,4 @@
+// const url = 'http://0.0.0.0:3000';
 const url = 'https://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io';
 const messageContainer = document.getElementById('chat-body');
 const inputEl = document.getElementById('input-el');
@@ -9,7 +10,10 @@ inputEl.value = '';
 // ------------------ FETCH HISTORY ------------------ //
 const getMessages = async () => {
   try {
-    const response = await fetch(`${url}/messages`);
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${url}/messages`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
     const messages = await response.json();
     messagesState = messages;
     displayMessages(messagesState);
@@ -48,7 +52,9 @@ const displayMessages = (messages) => {
 
       await fetch(`${url}/messages/${message.id}/reaction`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json",
+          "Authorization": "Bearer " + localStorage.getItem("token")
+        },
         body: JSON.stringify({ type: "like" })
       });
     };
@@ -62,7 +68,10 @@ const displayMessages = (messages) => {
 
       await fetch(`${url}/messages/${message.id}/reaction`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json", 
+          "Authorization": "Bearer " + localStorage.getItem("token")
+        },
         body: JSON.stringify({ type: "dislike" })
       });
     };
@@ -89,10 +98,11 @@ const storeMessages = async (event) => {
   try {
     const response = await fetch(`${url}/messages`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json",
+        "Authorization" : "Bearer " + localStorage.getItem("token")
+      },
       body: JSON.stringify({ 
         message: newMessage,
-        username: window.currentUser // sends the logged-in username
       })
     });
 
@@ -107,8 +117,9 @@ const storeMessages = async (event) => {
 submitBtn.addEventListener('click', storeMessages);
 
 // ------------------ WEBSOCKET SETUP ------------------ //
+
 const setupWebSocket = () => {
-  ws = new WebSocket(`wss://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io`);
+  ws = new WebSocket(`ws://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io?token=${localStorage.getItem("token")}`);
 
   ws.onopen = () => {
     console.log("WebSocket connected");
