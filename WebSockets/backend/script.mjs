@@ -81,8 +81,8 @@ app.post("/login", async (req, res) => {
   if (!match) return res.status(400).json({ message: "Invalid credentials" });
 
   // res.json({ message: "✅ Login successful" });
-  const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "1hr"});
-  res.json({ message: "✅ Login successful" });
+  const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "1h"});
+  res.json({ message: "✅ Login successful", token });
 });
 
 // ------------------ CHAT STORAGE ------------------ //
