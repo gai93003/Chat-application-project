@@ -119,8 +119,13 @@ submitBtn.addEventListener('click', storeMessages);
 // ------------------ WEBSOCKET SETUP ------------------ //
 
 const setupWebSocket = () => {
-  const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-  ws = new WebSocket(`${wsProtocol}://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io?token=${localStorage.getItem("token")}`);
+  // const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+
+  ws = new WebSocket(`wss://x0cgw40ok0o4wgosoo0g4kow.hosting.codeyourfuture.io/ws?token=${localStorage.getItem("token")}`);
+
+
+  // ws = new WebSocket(`${wsProtocol}://0.0.0.0:3000?token=${localStorage.getItem("token")}`);
+
 
   ws.onopen = () => {
     console.log("WebSocket connected");
