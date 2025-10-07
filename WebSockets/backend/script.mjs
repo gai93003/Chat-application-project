@@ -80,7 +80,7 @@ app.post("/login", async (req, res) => {
   const match = await bcrypt.compare(password, user.passwordHash);
   if (!match) return res.status(400).json({ message: "Invalid credentials" });
 
-  // res.json({ message: "✅ Login successful" });
+  // res.json({ message: "✅ Login successful" }); This will also attach the token which has just been created to the message and send together.
   const token = jwt.sign({ username }, JWT_SECRET, { expiresIn: "1h"});
   res.json({ message: "✅ Login successful", token });
 });
