@@ -11,10 +11,20 @@
 
 <section id="auth-section">
   <h2>Login / Register</h2>
-  <input id="username" placeholder="Username">
-  <input id="password" type="password" placeholder="Password">
-  <button id="register-btn">Register</button>
-  <button id="login-btn">Login</button>
+  <label for="username">
+    Username:
+      <input id="username" placeholder="Username">
+  </label>
+  <label for="password">
+    Password:
+    <input id="password" type="password" placeholder="Password">
+
+  </label>
+  <div id="btns">
+    <button id="register-btn">Register</button> 
+    <button id="login-btn">Login</button>
+  </div>
+  
   <p id="status"></p>
 </section>
 
@@ -23,7 +33,7 @@
     <article id="messages"></article>
   </section>
   <section id="input-container">
-    <label for="input-el">Chat:
+    <label for="input-el">Message:
       <input type="text" placeholder="message" id="input-el" required>
     </label>
     <button id="send-btn">Send</button>

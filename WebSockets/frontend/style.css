@@ -6,17 +6,35 @@
 }
 
 body {
-  background: #dafb9f;
+  background: #f0f1f5;
+  padding-top: 30px;
 }
 
-/* main#chat-app {
-
-} */
+header {
+  background: inherit;
+  padding: 1rem;
+  font-size: 35px;
+  color: #431eae;
+  font-weight: 500;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  border-radius: 5px;
+}
 
 
 #messages {
-  background-color: #00212b;
+  background-color: brown;
   color: #c0cad7;
+  height: calc(80vh - 60px - 70px);
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  padding: 1rem;
+  padding-bottom: 90px;
+  box-sizing: border-box;
+  margin: 0;
 }
 
 /* Common message style */
@@ -31,7 +49,8 @@ body {
 
 /* My messages (right side, green) */
 .my-message {
-  background-color: #c2f9bb;
+  background-color: #431eae;
+  color: #c0cad7;
   margin-left: auto;       /* Push to right */
   text-align: right;
   border-top-right-radius: 0;
@@ -39,7 +58,8 @@ body {
 
 /* Others' messages (left side, gray) */
 .other-message {
-  background-color: #e0e0e0;
+  background-color: #003847;
+  color: #c0cad7;
   margin-right: auto;      /* Push to left */
   text-align: left;
   border-top-left-radius: 0;
@@ -50,3 +70,103 @@ body {
   margin: 2px;
   font-size: 0.8rem;
 }
+
+#chat-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: rgba(128, 128, 128, 0.336);
+  padding: 60px 20px;
+  /* border: 1px solid black; */
+  margin: 60px 16px 18px;
+  border-radius: 10px;
+}
+
+#input-container {
+  padding: 1rem;
+  position: fixed;
+  bottom: 0;
+  background-color: rgba(28, 27, 27, 0.421);
+  position: fixed;
+  right: 0;
+  left: 0;
+  margin:0 16px;
+  flex: 1f 2f;
+  display: flex;
+  gap: 1rem;
+  border-radius: 5px;
+}
+
+#input-container input, button {
+  outline: none;
+  border: none;
+  padding: 1rem;
+  border-radius: 5px;
+  gap: 1rem;
+}
+
+#input-container label {
+  width: 90%;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#input-container label input {
+  width: 80%;
+  font-size: 18px;
+}
+
+#input-container button {
+  width: 10%;
+}
+
+#auth-section {
+  background-color: rgba(128, 128, 128, 0.501);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 55%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 5px;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+#auth-section h2 {
+  font-size: 30px;
+  margin: 1rem;
+}
+
+#auth-section input, #auth-section button {
+  outline: none;
+  border: none;
+  padding: 9px;
+  font-size: 18px;
+  border-radius: 6px;
+  background:rgba(128, 128, 128, 0.485);
+}
+
+#auth-section button {
+  background: #431eae;
+  color: #c0cad7;
+}
+
+#auth-section label {
+  font-size: 23px;
+  font-weight: bold;
+}
+
+#auth-section #btns {
+  gap: 1rem;
+  display: flex;
+  margin: 1rem;
+
+}
+
+
+
